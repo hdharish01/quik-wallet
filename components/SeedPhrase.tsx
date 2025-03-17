@@ -1,9 +1,11 @@
 "use client"
 
+import { useSelector } from "react-redux";
 import { GenerateWalletButton } from "./GenerateWalletButton";
 
 export function SeedPhrase(){
-    
+    const mnemonic = useSelector((state:any)=>state.mnemonic)
+
     return <div className="mt-10 flex justify-center gap-6">
         <div>
             <input type="text" className="p-2 w-[40rem] border-2 border-slate-400 rounded-lg bg-transparent" placeholder="Enter your secret seed phrase here(or generate new one)"></input>
@@ -11,5 +13,6 @@ export function SeedPhrase(){
         <div>
             <GenerateWalletButton></GenerateWalletButton>
         </div>
+        
     </div>
 }
