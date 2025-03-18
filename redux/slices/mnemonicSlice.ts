@@ -1,6 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 
-const initialState = {mnemonic:""}
+const initialState = {
+    mnemonic:""
+}
 
 const mnemonicSlice = createSlice({
     name:"mnemonic",
@@ -13,5 +15,5 @@ const mnemonicSlice = createSlice({
 })
 
 
-export const { changeMnemonic } = mnemonicSlice.actions
+export const { changeMnemonic } = mnemonicSlice.actions;
 export default mnemonicSlice.reducer;
