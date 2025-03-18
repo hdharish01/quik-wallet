@@ -2,15 +2,15 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { mnemonicToSeed, mnemonicToSeedSync, validateMnemonic } from "bip39";
 import { derivePath } from "ed25519-hd-key";
 import nacl from "tweetnacl";
-import { Keypair, PublicKey } from "@solana/web3.js"
+import { Keypair } from "@solana/web3.js"
 import { Wallet, HDNodeWallet } from "ethers"
 
-interface SolanaWallet {
-    publicKey: PublicKey,
-    secretKey: Uint8Array,
+export interface SolanaWallet {
+    publicKey: string,
+    secretKey: string,
 }
 
-interface EthereumWallet {
+export interface EthereumWallet {
     address: string,
     privateKey: string,
 }
@@ -53,8 +53,8 @@ const walletsSlice = createSlice({
                     const solSecret = nacl.sign.keyPair.fromSeed(solDerivedSeed).secretKey;
                     const solkeypair = Keypair.fromSecretKey(solSecret);
                     state.solWallets.push({
-                        publicKey: solkeypair.publicKey,
-                        secretKey: solkeypair.secretKey,
+                        publicKey: solkeypair.publicKey.toBase58(),
+                        secretKey: Buffer.from(solkeypair.secretKey).toString("hex"),
                     });
                 }catch(solError){
                     state.error = "Error generating solana wallet: "  + (solError instanceof Error ? solError.message : String(solError));
