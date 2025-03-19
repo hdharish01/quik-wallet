@@ -86,9 +86,11 @@ const walletsSlice = createSlice({
 
         clearError:(state)=>{
             state.error = null;
-        }
+        },
+
+        clearWallet: () => initialState,
     }
 })
 
-export const { addWallet, clearError } = walletsSlice.actions;
+export const { addWallet, clearError, clearWallet } = walletsSlice.actions;
 export default walletsSlice.reducer;
