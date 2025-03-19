@@ -8,3 +8,6 @@ export const store = configureStore({
         wallets:walletsSlice,
     }
 })
+
+
+export type RootState = ReturnType<typeof store.getState>

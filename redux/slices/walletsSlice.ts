@@ -15,7 +15,7 @@ export interface EthereumWallet {
     privateKey: string,
 }
 
-interface walletsState {
+export interface walletsState {
     solWallets: SolanaWallet[],
     ethWallets: EthereumWallet[],
     currentIndex: number,
