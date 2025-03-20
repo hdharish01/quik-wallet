@@ -1,11 +1,22 @@
 "use client"
 
+import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import { GenerateWalletButton } from "./GenerateWalletButton";
 import { useEffect, useState } from "react";
 import ExistingWalletButton from "./ExistingWalletButton";
 import { validateMnemonic } from "bip39";
 import { RootState } from "@/redux/store";
+import { CopyMnemonicButton } from "./CopyMnemonicButton";
+
+const wordAnimation = {
+    hidden: { opacity: 0, y: 10 },
+    visible: (index: number) => ({
+        opacity: 1,
+        y: 0,
+        transition: { delay: index * 0.1, duration: 0.3, ease: "easeOut" },
+    }),
+};
 
 export function SeedPhrase() {
     const [inputMnemonic, setInputMnemonic] = useState("")
@@ -65,29 +76,40 @@ export function SeedPhrase() {
                     {mnemonic.error}
                 </div>
             ) : mnemonicWords.length > 0 ? (
-                <div className="mt-10 px-4 max-w-4xl mx-auto">
-                    <div className="grid grid-cols-3 md:grid-cols-6 gap-3 mb-3">
+                <div className="mt-10 px-4 max-w-4xl mx-auto overflow-hidden">
+                    <div className="grid grid-cols-3 md:grid-cols-6 gap-3 mb-3 overflow-hidden">
                         {mnemonicWords.slice(0, 6).map((word:string, index:number) => (
-                            <div 
+                            <motion.div 
                                 key={`word-${index}`} 
-                                className="bg-slate-700 border border-slate-600 rounded-lg p-2 text-center relative"
+                                className="bg-slate-700 border border-slate-600 rounded-lg p-2 text-center relative hover:brightness-125"
+                                variants={wordAnimation}
+                                initial="hidden"
+                                animate="visible"
+                                custom={index}
                             >
                                 <div className="absolute top-1 left-2 text-xs text-slate-400">{index + 1}</div>
                                 <div className="text-white font-mono">{word}</div>
-                            </div>
+                            </motion.div>
                         ))}
                     </div>
-                    <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+                    <div className="grid grid-cols-3 md:grid-cols-6 gap-3 overflow-hidden">
                         {mnemonicWords.slice(6, 12).map((word:string, index:number) => (
-                            <div 
+                            <motion.div 
                                 key={`word-${index + 6}`} 
-                                className="bg-slate-700 border border-slate-600 rounded-lg p-2 text-center relative"
+                                className="bg-slate-700 border border-slate-600 rounded-lg p-2 text-center relative hover:brightness-125"
+                                variants={wordAnimation}
+                                initial="hidden"
+                                animate="visible"
+                                custom={index + 6}
                             >
                                 <div className="absolute top-1 left-2 text-xs text-slate-400">{index + 7}</div>
                                 <div className="text-white font-mono">{word}</div>
-                            </div>
+                            </motion.div>
                         ))}
                     </div>
+                    
+                    <CopyMnemonicButton />
+
                 </div>
             ) : null}
         </div>
