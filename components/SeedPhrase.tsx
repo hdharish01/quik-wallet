@@ -8,6 +8,7 @@ import ExistingWalletButton from "./ExistingWalletButton";
 import { validateMnemonic } from "bip39";
 import { RootState } from "@/redux/store";
 import { CopyMnemonicButton } from "./CopyMnemonicButton";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 
 const wordAnimation = {
     hidden: { opacity: 0, y: 10 },
@@ -22,6 +23,7 @@ export function SeedPhrase() {
     const [inputMnemonic, setInputMnemonic] = useState("")
     const [isValidMnemonic, setIsValidMnemonic] = useState(false)
     const [isMnemonicAvailable, setIsMnemonicAvailable] = useState(false)
+    const [isBlurred, setIsBlurred] = useState(false)
     const mnemonic = useSelector((state:RootState)=>state.mnemonic)
     const wallets = useSelector((state:RootState)=> state.wallets)
     const hasWallets = wallets.solWallets.length > 0
@@ -45,6 +47,10 @@ export function SeedPhrase() {
     }, [inputMnemonic])
 
     const mnemonicWords = mnemonic.mnemonic ? mnemonic.mnemonic.split(" ") : [];
+
+    const toggleBlur = () => {
+        setIsBlurred(!isBlurred);
+    };
 
     return (
         <div className="w-full overflow-x-hidden">
@@ -77,39 +83,65 @@ export function SeedPhrase() {
                 </div>
             ) : mnemonicWords.length > 0 ? (
                 <div className="mt-10 px-4 max-w-4xl mx-auto overflow-hidden">
-                    <div className="grid grid-cols-3 md:grid-cols-6 gap-3 mb-3 overflow-hidden">
-                        {mnemonicWords.slice(0, 6).map((word:string, index:number) => (
-                            <motion.div 
-                                key={`word-${index}`} 
-                                className="bg-slate-700 border border-slate-600 rounded-lg p-2 text-center relative hover:brightness-125"
-                                variants={wordAnimation}
-                                initial="hidden"
-                                animate="visible"
-                                custom={index}
-                            >
-                                <div className="absolute top-1 left-2 text-xs text-slate-400">{index + 1}</div>
-                                <div className="text-white font-mono">{word}</div>
-                            </motion.div>
-                        ))}
+                    <div className="flex justify-end mb-2">
+                        <button 
+                            onClick={toggleBlur}
+                            className="flex items-center gap-2 bg-slate-700 hover:bg-slate-600 text-white px-3 py-1 rounded-lg transition-all duration-200"
+                        >
+                            {isBlurred ? (
+                                <>
+                                    <EyeIcon size={16} />
+                                    <span>Show Phrase</span>
+                                </>
+                            ) : (
+                                <>
+                                    <EyeOffIcon size={16} />
+                                    <span>Hide Phrase</span>
+                                </>
+                            )}
+                        </button>
                     </div>
-                    <div className="grid grid-cols-3 md:grid-cols-6 gap-3 overflow-hidden">
-                        {mnemonicWords.slice(6, 12).map((word:string, index:number) => (
-                            <motion.div 
-                                key={`word-${index + 6}`} 
-                                className="bg-slate-700 border border-slate-600 rounded-lg p-2 text-center relative hover:brightness-125"
-                                variants={wordAnimation}
-                                initial="hidden"
-                                animate="visible"
-                                custom={index + 6}
-                            >
-                                <div className="absolute top-1 left-2 text-xs text-slate-400">{index + 7}</div>
-                                <div className="text-white font-mono">{word}</div>
-                            </motion.div>
-                        ))}
+                    
+                    <div className="relative">
+                        {isBlurred && (
+                            <div className="absolute inset-0 bg-slate-800 bg-opacity-70 backdrop-blur-md z-10 flex items-center justify-center rounded-lg border border-slate-600">
+                                <p className="text-slate-300">Seed phrase hidden for security</p>
+                            </div>
+                        )}
+                        
+                        <div className="grid grid-cols-3 md:grid-cols-6 gap-3 mb-3 overflow-hidden">
+                            {mnemonicWords.slice(0, 6).map((word:string, index:number) => (
+                                <motion.div 
+                                    key={`word-${index}`} 
+                                    className="bg-slate-700 border border-slate-600 rounded-lg p-2 text-center relative hover:brightness-125"
+                                    variants={wordAnimation}
+                                    initial="hidden"
+                                    animate="visible"
+                                    custom={index}
+                                >
+                                    <div className="absolute top-1 left-2 text-xs text-slate-400">{index + 1}</div>
+                                    <div className="text-white font-mono">{word}</div>
+                                </motion.div>
+                            ))}
+                        </div>
+                        <div className="grid grid-cols-3 md:grid-cols-6 gap-3 overflow-hidden">
+                            {mnemonicWords.slice(6, 12).map((word:string, index:number) => (
+                                <motion.div 
+                                    key={`word-${index + 6}`} 
+                                    className="bg-slate-700 border border-slate-600 rounded-lg p-2 text-center relative hover:brightness-125"
+                                    variants={wordAnimation}
+                                    initial="hidden"
+                                    animate="visible"
+                                    custom={index + 6}
+                                >
+                                    <div className="absolute top-1 left-2 text-xs text-slate-400">{index + 7}</div>
+                                    <div className="text-white font-mono">{word}</div>
+                                </motion.div>
+                            ))}
+                        </div>
                     </div>
                     
                     <CopyMnemonicButton />
-
                 </div>
             ) : null}
         </div>
