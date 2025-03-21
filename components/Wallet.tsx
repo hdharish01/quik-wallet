@@ -1,16 +1,24 @@
 "use client"
 
 import { motion } from "framer-motion";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { SeedPhrase } from "./SeedPhrase";
-import { SolanaWallet } from "@/redux/slices/walletsSlice";
-import { RootState } from "@/redux/store";
+import { SolanaWallet, EthereumWallet, fetchSolanaBalance, fetchEthereumBalance } from "@/redux/slices/walletsSlice";
+import { AppDispatch, RootState } from "@/redux/store";
 import { AddWalletButton } from "./AddWalletButton";
+import { useEffect } from "react";
 
 export function Wallet() {
+    const dispatch = useDispatch<AppDispatch>()
     const wallets = useSelector((state:RootState) => state.wallets)
-    const error = useSelector((state:RootState) => state.wallets.error)
-    
+    useEffect(()=>{
+        if(wallets.solWallets.length>0){
+            const lastIndex = wallets.solWallets.length - 1;
+            dispatch(fetchSolanaBalance(wallets.solWallets[lastIndex].publicKey));
+            dispatch(fetchEthereumBalance(wallets.ethWallets[lastIndex].address));
+        }
+    },[wallets.solWallets.length,dispatch])
+
     return (
         <div className="w-full overflow-x-hidden">
 
@@ -47,10 +55,26 @@ export function Wallet() {
                                                     <p className="break-all overflow-hidden font-mono">{solWallet.publicKey}</p>
                                                 </div>
                                             </div>
-                                            <div>
+                                            <div className="mb-3">
                                                 <p className="text-slate-400 text-sm mb-1">Secret Key</p>
                                                 <div className="text-white bg-slate-700/50 p-2 rounded max-w-full overflow-hidden">
                                                     <p className="break-all overflow-hidden font-mono">{solWallet.secretKey}</p>
+                                                </div>
+                                            </div>
+                                            <div className="">
+                                                <p className="text-slate-400 text-sm mb-1">Balance</p>
+                                                <div className="flex items-center">
+                                                    <div className="text-white bg-slate-700/50 p-2 rounded overflow-hidden flex-grow">
+                                                        <p className="font-mono">
+                                                            {solWallet.balance === null ? (
+                                                                <span className="text-slate-400">Loading...</span>
+                                                            ) : solWallet.balance === "Error" ? (
+                                                                <span className="text-red-400">Failed to load</span>
+                                                            ) : (
+                                                                <span>{solWallet.balance} SOL</span>
+                                                            )}
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -65,10 +89,24 @@ export function Wallet() {
                                                         <p className="break-all overflow-hidden font-mono">{ethWallet.address}</p>
                                                     </div>
                                                 </div>
-                                                <div>
+                                                <div className="mb-3">
                                                     <p className="text-slate-400 text-sm mb-1">Private Key</p>
                                                     <div className="text-white bg-slate-700/50 p-2 rounded max-w-full overflow-hidden">
                                                         <p className="break-all overflow-hidden font-mono">{ethWallet.privateKey}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="mt-9">
+                                                    <p className="text-slate-400 text-sm mb-1">Balance</p>
+                                                    <div className="flex items-center">
+                                                        <div className="text-white bg-slate-700/50 p-2 rounded overflow-hidden flex-grow">
+                                                            <p className="font-mono">
+                                                                {ethWallet.balance === null ? (
+                                                                    <span className="text-slate-400">Loading...</span>
+                                                                ) : (
+                                                                    <span>{ethWallet.balance} ETH</span>
+                                                                )}
+                                                            </p>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>

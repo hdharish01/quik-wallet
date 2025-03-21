@@ -1,18 +1,22 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { mnemonicToSeed, mnemonicToSeedSync, validateMnemonic } from "bip39";
 import { derivePath } from "ed25519-hd-key";
 import nacl from "tweetnacl";
 import { Keypair } from "@solana/web3.js"
 import { Wallet, HDNodeWallet } from "ethers"
+import { getSolana } from "@/app/actions/getSolana";
+import { getEthereum } from "@/app/actions/getEthereum";
 
 export interface SolanaWallet {
     publicKey: string,
     secretKey: string,
+    balance: string | null
 }
 
 export interface EthereumWallet {
     address: string,
     privateKey: string,
+    balance: string | null
 }
 
 export interface walletsState {
@@ -28,6 +32,24 @@ const initialState:walletsState = {
     currentIndex: 0,
     error: null,
 };
+
+export const fetchSolanaBalance = createAsyncThunk('wallets/fetchSolanaBalance',async (publicKey:string,{ rejectWithValue})=>{
+    try{
+        const balance = await getSolana(publicKey);
+        return {publicKey,balance};
+    }catch{
+        return rejectWithValue("Failed to fetch Solana balance");
+    }
+})
+
+export const fetchEthereumBalance = createAsyncThunk('wallets/fetchEthereumBalance',async (address:string,{ rejectWithValue })=>{
+    try{
+        const balance = await getEthereum(address);
+        return {address,balance};
+    }catch{
+        return rejectWithValue("Failed to fetch Ethereum balance");
+    }
+})
 
 const walletsSlice = createSlice({
     name:"wallets",
@@ -55,6 +77,7 @@ const walletsSlice = createSlice({
                     state.solWallets.push({
                         publicKey: solkeypair.publicKey.toBase58(),
                         secretKey: Buffer.from(solkeypair.secretKey).toString("hex"),
+                        balance: null,
                     });
                 }catch(solError){
                     state.error = "Error generating solana wallet: "  + (solError instanceof Error ? solError.message : String(solError));
@@ -70,6 +93,7 @@ const walletsSlice = createSlice({
                     state.ethWallets.push({
                         address: wallet.address,
                         privateKey: ethPrivateKey,
+                        balance: null,
                     });
                 }catch(ethError){
                     state.error = "Error generating ethereum wallet: " + (ethError instanceof Error ? ethError.message : String(ethError));
@@ -89,6 +113,22 @@ const walletsSlice = createSlice({
         },
 
         clearWallet: () => initialState,
+    },
+    extraReducers: (builder) =>{
+        builder.addCase(fetchSolanaBalance.fulfilled,(state,action)=>{
+            const {publicKey,balance} = action.payload;
+            const wallet = state.solWallets.find(w => w.publicKey === publicKey);
+            if(wallet){
+                wallet.balance = balance;
+            }
+        })
+        .addCase(fetchEthereumBalance.fulfilled,(state,action)=>{
+            const {address,balance} = action.payload;
+            const wallet = state.ethWallets.find(w => w.address === address);
+            if(wallet){
+                wallet.balance = balance;
+            }
+        })
     }
 })
 
