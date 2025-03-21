@@ -91,12 +91,10 @@ export function SeedPhrase() {
                             {isBlurred ? (
                                 <>
                                     <EyeIcon size={16} />
-                                    <span>Show Phrase</span>
                                 </>
                             ) : (
                                 <>
                                     <EyeOffIcon size={16} />
-                                    <span>Hide Phrase</span>
                                 </>
                             )}
                         </button>
