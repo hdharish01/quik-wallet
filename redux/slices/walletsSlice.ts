@@ -112,6 +112,16 @@ const walletsSlice = createSlice({
             state.error = null;
         },
 
+        removeSolWallet:(state,action:PayloadAction<string>)=>{
+            const publicKey = action.payload;
+            state.solWallets = state.solWallets.filter((solWallet) => solWallet.publicKey !== publicKey);
+        },
+
+        removeEthWallet:(state,action:PayloadAction<string>)=>{
+            const address = action.payload;
+            state.ethWallets = state.ethWallets.filter((ethWallet) => ethWallet.address !== address);
+        },
+
         clearWallet: () => initialState,
     },
     extraReducers: (builder) =>{
@@ -132,5 +142,5 @@ const walletsSlice = createSlice({
     }
 })
 
-export const { addWallet, clearError, clearWallet } = walletsSlice.actions;
+export const { addWallet, clearError, clearWallet, removeSolWallet, removeEthWallet } = walletsSlice.actions;
 export default walletsSlice.reducer;

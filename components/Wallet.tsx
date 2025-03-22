@@ -3,11 +3,11 @@
 import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import { SeedPhrase } from "./SeedPhrase";
-import { SolanaWallet, EthereumWallet, fetchSolanaBalance, fetchEthereumBalance } from "@/redux/slices/walletsSlice";
+import { SolanaWallet, EthereumWallet, fetchSolanaBalance, fetchEthereumBalance, removeSolWallet, removeEthWallet } from "@/redux/slices/walletsSlice";
 import { AppDispatch, RootState } from "@/redux/store";
 import { AddWalletButton } from "./AddWalletButton";
 import { useEffect, useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Trash2 } from "lucide-react";
 
 export function Wallet() {
     const dispatch = useDispatch<AppDispatch>()
@@ -39,6 +39,19 @@ export function Wallet() {
         return "•".repeat(Math.min(key.length, 40));
     }
 
+    const handleDeleteWallet = (index: number) => {
+        const solWallet = wallets.solWallets[index];
+        const ethWallet = wallets.ethWallets[index];
+        
+        if (solWallet) {
+            dispatch(removeSolWallet(solWallet.publicKey));
+        }
+        
+        if (ethWallet) {
+            dispatch(removeEthWallet(ethWallet.address));
+        }
+    }
+
     return (
         <div className="w-full overflow-x-hidden">
 
@@ -61,8 +74,15 @@ export function Wallet() {
                                     animate={{ opacity:1, y:0}}
                                     transition={{ duration:0.5, ease:"easeOut" }}
                                 >
-                                    <div className="p-4 bg-slate-700 border-b border-slate-600">
+                                    <div className="p-4 bg-slate-700 border-b border-slate-600 flex justify-between items-center">
                                         <h3 className="text-white font-mono text-xl">Wallet {index + 1}</h3>
+                                        <button 
+                                            onClick={() => handleDeleteWallet(index)}
+                                            className="bg-red-800 hover:bg-red-600 text-white px-1 py-1 rounded flex items-center gap-1 transition-colors duration-200"
+                                            aria-label="Delete Wallet"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
                                     </div>
                                     
                                     <div className="grid md:grid-cols-2 gap-4 p-5">
