@@ -1,6 +1,6 @@
 import { changeMnemonic } from "@/redux/slices/mnemonicSlice";
 import { addWallet } from "@/redux/slices/walletsSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 export default function ExistingWalletButton({inputMnemonic,setInputMnemonic}:{inputMnemonic:string,setInputMnemonic:(value:string)=>void}) {
     const dispatch = useDispatch()

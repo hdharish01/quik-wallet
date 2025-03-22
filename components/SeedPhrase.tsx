@@ -1,14 +1,15 @@
 "use client"
 
 import { motion } from "framer-motion";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { GenerateWalletButton } from "./GenerateWalletButton";
 import { useEffect, useState } from "react";
 import ExistingWalletButton from "./ExistingWalletButton";
-import { validateMnemonic } from "bip39";
 import { RootState } from "@/redux/store";
 import { CopyMnemonicButton } from "./CopyMnemonicButton";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { changeMnemonic } from "@/redux/slices/mnemonicSlice";
+import { addWallet } from "@/redux/slices/walletsSlice";
 
 const wordAnimation = {
     hidden: { opacity: 0, y: 10 },
@@ -20,8 +21,10 @@ const wordAnimation = {
 };
 
 export function SeedPhrase() {
+    const dispatch = useDispatch()
+
     const [inputMnemonic, setInputMnemonic] = useState("")
-    const [isValidMnemonic, setIsValidMnemonic] = useState(false)
+    
     const [isMnemonicAvailable, setIsMnemonicAvailable] = useState(false)
     const [isBlurred, setIsBlurred] = useState(false)
     const mnemonic = useSelector((state:RootState)=>state.mnemonic)
@@ -30,14 +33,6 @@ export function SeedPhrase() {
 
     useEffect(() => {
         // Only consider valid if there's input AND it passes validation
-        {
-            if (inputMnemonic && validateMnemonic(inputMnemonic)) {
-                setIsValidMnemonic(true)
-            } else {
-                setIsValidMnemonic(false)
-            };
-        };
-
         if(inputMnemonic){
             setIsMnemonicAvailable(true);
         }else{
@@ -65,6 +60,13 @@ export function SeedPhrase() {
                                 setInputMnemonic(e.target.value)
                             }}
                             value={inputMnemonic}
+                            onKeyDown={(e)=>{
+                                if(e.key === "Enter"){
+                                    dispatch(changeMnemonic(inputMnemonic));
+                                    dispatch(addWallet(inputMnemonic));
+                                    setInputMnemonic("")
+                                }
+                            }}
                         />
                     </div>
                     <div>

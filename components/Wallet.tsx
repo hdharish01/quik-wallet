@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import { SeedPhrase } from "./SeedPhrase";
-import { SolanaWallet, EthereumWallet, fetchSolanaBalance, fetchEthereumBalance, removeSolWallet, removeEthWallet } from "@/redux/slices/walletsSlice";
+import { SolanaWallet, fetchSolanaBalance, fetchEthereumBalance, removeSolWallet, removeEthWallet } from "@/redux/slices/walletsSlice";
 import { AppDispatch, RootState } from "@/redux/store";
 import { AddWalletButton } from "./AddWalletButton";
 import { useEffect, useState } from "react";
